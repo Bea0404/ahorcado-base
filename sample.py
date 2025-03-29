@@ -19,10 +19,22 @@ playing = True
 palabra = 'casa'
 solucion = ''
 
+incorrecto = ''
+correcto = ''
+
 for letra in palabra:
     solucion += '-'
 
+
+
+def comprobar_letra(palabra, solucion, pulsado):
+    for i, letra in enumerate(palabra):
+        if letra == pulsado:
+            solucion = solucion[:i] + letra + solucion[i+1:]
+    return solucion
+
 # bucle principal
+
 while playing:
     #clock.tick(20)
     counter += 1
@@ -31,6 +43,10 @@ while playing:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             playing = False
+        elif event.type == pg.KEYDOWN:
+            pulsado = pg.key.name(event.key)
+            solucion = comprobar_letra(palabra, solucion, pulsado)
+            
 
     # dibuja el ahorcado completo desactivado
     utils.draw_base(display, 30)
@@ -55,11 +71,11 @@ while playing:
 
     # dibuja el abecedario con algunas letras probadas
     # erróneas y otras letras válidas
-    incorrecto = ''
-    correcto = ''
+
     utils.draw_letters(display, letters_font, 360, 50, incorrecto, correcto)
     #TODO:  Adivinar letras  jugador 2 - Pulsas un letra del teclado
     #       comprobar si la letra pulsada esta en la palabra que se introdujo, si es asi se pinta en verde ("a") y se 
     #       muestra en la palabra a adivinar ('-A-A'), sino en rojo ("amu") y se pinta una parte del ahorcado -> status + 1
+
 
     pg.display.flip()
