@@ -25,18 +25,27 @@ correcto = ''
 for letra in palabra:
     solucion += '-'
 
+def comprobar_letra(letra, palabra, solucion):
+    """
+    Comprueba si la letra está en la palabra y actualiza la solución.
 
-
-def comprobar_letra(palabra, solucion, pulsado):
-    for i, letra in enumerate(palabra):
-        if letra == pulsado:
-            solucion = solucion[:i] + letra + solucion[i+1:]
-    return solucion
+    :param letra: La letra pulsada por el usuario.
+    :param palabra: La palabra a adivinar.
+    :param solucion: La solución actual con guiones.
+    :return: La solución actualizada y un booleano indicando si la letra estaba en la palabra.
+    """
+    nueva_solucion = list(solucion)  # Convertir solucion a una lista para modificarla
+    letra_encontrada = False
+    for i, caracter in enumerate(palabra):
+        if caracter == letra:
+            nueva_solucion[i] = letra  # Actualizar la letra en la posición correcta
+            letra_encontrada = True
+    return ''.join(nueva_solucion), letra_encontrada  # Convertir la lista de nuevo a una cadena
 
 # bucle principal
 
 while playing:
-    #clock.tick(20)
+    clock.tick(20)
     counter += 1
 
     # evento para salir al cerrar la ventana
@@ -45,8 +54,12 @@ while playing:
             playing = False
         elif event.type == pg.KEYDOWN:
             pulsado = pg.key.name(event.key)
-            solucion = comprobar_letra(palabra, solucion, pulsado)
-            
+            solucion, letra_encontrada = comprobar_letra(pulsado, palabra, solucion)
+            if letra_encontrada:
+                correcto += pulsado
+            else:
+                incorrecto += pulsado
+                status += 1
 
     # dibuja el ahorcado completo desactivado
     utils.draw_base(display, 30)
@@ -73,9 +86,18 @@ while playing:
     # erróneas y otras letras válidas
 
     utils.draw_letters(display, letters_font, 360, 50, incorrecto, correcto)
-    #TODO:  Adivinar letras  jugador 2 - Pulsas un letra del teclado
+    #  Adivinar letras  jugador 2 - Pulsas un letra del teclado
     #       comprobar si la letra pulsada esta en la palabra que se introdujo, si es asi se pinta en verde ("a") y se 
     #       muestra en la palabra a adivinar ('-A-A'), sino en rojo ("amu") y se pinta una parte del ahorcado -> status + 1
 
+    # Comprobar si el jugador ha ganado o perdido
+    if '-' not in solucion:
+        print("¡Has ganado!")
+        playing = False
+    elif status >= len(GRAPHICS) - 1:
+        print("¡Has perdido! La palabra era:", palabra)
+        playing = False
 
     pg.display.flip()
+
+pg.quit()
