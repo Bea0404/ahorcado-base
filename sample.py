@@ -1,6 +1,6 @@
 import pygame as pg
 from hangman import utils
-from hangman.constants import GRAPHICS, WINDOW_H, WINDOW_W
+from hangman.constants import BLACK, GRAPHICS, WINDOW_H, WINDOW_W
 
 
 # inicialización
@@ -16,14 +16,11 @@ counter = 0
 status = -1
 playing = True
 
-palabra = 'casa'
-solucion = ''
+palabra = 'ordenador'
+solucion = '-' * len(palabra)
 
 incorrecto = ''
 correcto = ''
-
-for letra in palabra:
-    solucion += '-'
 
 def comprobar_letra(letra, palabra, solucion):
     """
@@ -60,6 +57,8 @@ while playing:
             else:
                 incorrecto += pulsado
                 status += 1
+
+    display.fill(BLACK)
 
     # dibuja el ahorcado completo desactivado
     utils.draw_base(display, 30)
