@@ -1,6 +1,6 @@
 import pygame as pg
 from hangman import utils
-from hangman.constants import BLACK, GRAPHICS, WINDOW_H, WINDOW_W
+from hangman.constants import BLACK, GRAPHICS, WHITE, WINDOW_H, WINDOW_W
 
 
 # inicialización
@@ -15,6 +15,7 @@ letters_font = pg.font.SysFont(font_name, 60)
 counter = 0
 status = -1
 playing = True
+game_over = False
 
 palabra = 'ordenador'
 solucion = '-' * len(palabra)
@@ -39,6 +40,20 @@ def comprobar_letra(letra, palabra, solucion):
             letra_encontrada = True
     return ''.join(nueva_solucion), letra_encontrada  # Convertir la lista de nuevo a una cadena
 
+def mostrar_fin_partida(display, font, texto):
+    img = font.render(texto, True, WHITE)
+    x = (WINDOW_W - img.get_width()) // 2
+    y = WINDOW_H // 2 -20
+    display.blit(img, (x, y))
+
+
+def mostrar_fin_partida2(display, font, texto):
+    img = font.render(texto, True, WHITE)
+    x = (WINDOW_W - img.get_width()) // 2
+    y2 = WINDOW_H // 2 + 40
+    display.blit(img, (x, y2))
+
+
 # bucle principal
 
 while playing:
@@ -47,9 +62,9 @@ while playing:
 
     # evento para salir al cerrar la ventana
     for event in pg.event.get():
-        if event.type == pg.QUIT:
+        if event.type == pg.QUIT or (event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE):
             playing = False
-        elif event.type == pg.KEYDOWN:
+        elif event.type == pg.KEYDOWN and not game_over:
             pulsado = pg.key.name(event.key)
             solucion, letra_encontrada = comprobar_letra(pulsado, palabra, solucion)
             if letra_encontrada:
@@ -85,17 +100,18 @@ while playing:
     # erróneas y otras letras válidas
 
     utils.draw_letters(display, letters_font, 360, 50, incorrecto, correcto)
-    #  Adivinar letras  jugador 2 - Pulsas un letra del teclado
-    #       comprobar si la letra pulsada esta en la palabra que se introdujo, si es asi se pinta en verde ("a") y se 
-    #       muestra en la palabra a adivinar ('-A-A'), sino en rojo ("amu") y se pinta una parte del ahorcado -> status + 1
+    
 
     # Comprobar si el jugador ha ganado o perdido
+
     if '-' not in solucion:
-        print("¡Has ganado!")
-        playing = False
+        mostrar_fin_partida(display, font, '¡Has ganado!')
+        game_over = True
     elif status >= len(GRAPHICS) - 1:
-        print("¡Has perdido! La palabra era:", palabra)
-        playing = False
+        mostrar_fin_partida(display, font, '¡Has perdido!')
+        mostrar_fin_partida2(display, font, f'La palabra era: {palabra}') 
+        game_over = True
+
 
     pg.display.flip()
 
